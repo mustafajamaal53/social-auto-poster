@@ -80,8 +80,14 @@ IG_BUSINESS_ID=your_instagram_business_account_id
 IG_DEFAULT_IMAGE_URL=https://example.com/image.jpg
 ```
 
-## Notes
 
-- All API credentials are stored in `.env.local` (never hardcoded)
-- Credentials are only read server-side and never exposed to the browser
-- The app handles errors and displays helpful messages if something goes wrong
+## Key Features
+
+- **Multi-Platform Support**: Seamlessly post to both Telegram and Instagram.
+- **Premium UI/UX**: Includes three unique, high-fidelity design themes:
+  - **Aurora**: Dynamic gradients with animated glassmorphism.
+  - **Midnight**: A sleek, Dark, futuristic look with clean animations
+  - **Minimal**: A clean, modern aesthetic focused on content clarity.
+- **Robust Security**: Credentials are strictly server-side (using `.env.local`) and never exposed to the client.
+- **Resilient Error Handling**: Detailed user feedback for API failures, missing configurations, or network issues.
+- **Modular Architecture**: Built with a clean separation between UI components and API logic for high readability and maintainability.
