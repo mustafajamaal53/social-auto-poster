@@ -15,14 +15,19 @@ cd social-auto-poster
 npm install
 ```
 
-3. Set up API tokens (see below)
+3. Create `.env.local` file:
+```bash
+cp env.example .env.local
+```
 
-4. Run the development server:
+4. Set up API tokens (see below)
+
+5. Run the development server:
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Setting Up Telegram API Tokens
 
@@ -46,7 +51,7 @@ npm run dev
 
 ### Add to .env.local
 
-Open `.env.local` and add your credentials:
+Open `.env.local` (created in step 3) and add your credentials:
 
 ```env
 TELEGRAM_BOT_TOKEN=your_bot_token_here
