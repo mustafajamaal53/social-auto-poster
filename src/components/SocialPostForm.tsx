@@ -18,20 +18,25 @@ interface SocialPostFormProps {
 }
 
 export function SocialPostForm({ theme, onThemeChange, mounted }: SocialPostFormProps) {
+
     const [platform, setPlatform] = useState<Platform>("telegram");
     const [message, setMessage] = useState("");
     const [imageUrl, setImageUrl] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [result, setResult] = useState<PublishResponse | null>(null);
 
+    // Dynamic UI flags based on the active theme
     const isMidnight = theme === "midnight";
     const isMinimal = theme === "minimal";
 
+    // Performance Optimization: useMemo
+    // Recalculates 'canSubmit' only when dependencies change. This prevents unnecessary logic execution on every re-render while typing.
     const canSubmit = useMemo(
         () => message.trim().length > 0 && !isSubmitting,
         [message, isSubmitting],
     );
 
+    // Perform the server-side API call and handles the response states.
     async function handlePublish(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setIsSubmitting(true);
@@ -144,7 +149,11 @@ export function SocialPostForm({ theme, onThemeChange, mounted }: SocialPostForm
             </div>
 
             <form onSubmit={handlePublish} className="space-y-6">
-                {/* Message Input */}
+                {/* 
+                    Message Input Block 
+                    - Shows real-time character count.
+                    - Dynamically styled based on the selected theme.
+                */}
                 <div className={`space-y-2 ${mounted ? 'animate-fade-in opacity-100' : 'opacity-0'}`} style={{ animationDelay: '0.1s' }}>
                     <label className={`text-sm font-semibold flex items-center gap-2 ${isMidnight ? "text-slate-200" : "text-slate-700"
                         }`}>
@@ -173,7 +182,11 @@ export function SocialPostForm({ theme, onThemeChange, mounted }: SocialPostForm
                     </div>
                 </div>
 
-                {/* Platform Selection */}
+                {/* 
+                    Platform Selection Block 
+                    - Uses custom radio interactions for a premium feel.
+                    - Features theme-aware color palettes for active states (Indigo vs Purple vs Blue).
+                */}
                 <div className={`space-y-3 ${mounted ? 'animate-fade-in opacity-100' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
                     <p className={`text-sm font-semibold flex items-center gap-2 ${isMidnight ? "text-slate-200" : "text-slate-700"
                         }`}>
@@ -317,7 +330,11 @@ export function SocialPostForm({ theme, onThemeChange, mounted }: SocialPostForm
                 </div>
             </form>
 
-            {/* Result Message */}
+            {/* 
+                Conditional Feedback Display 
+                - Uses color theory (green/red) to convey status instantly.
+                - Backdrop-blur for consistency with the glassmorphism aesthetic.
+            */}
             {result && (
                 <div
                     className={`mt-6 animate-fade-in rounded-2xl border px-4 py-3 text-sm font-medium shadow-sm ${result.ok

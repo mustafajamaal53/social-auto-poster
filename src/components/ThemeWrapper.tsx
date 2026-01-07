@@ -10,7 +10,10 @@ interface ThemeWrapperProps {
     children: ReactNode;
 }
 
+// ThemeWrapper Component
 export function ThemeWrapper({ theme, mounted, children }: ThemeWrapperProps) {
+
+    // --- Minimal Theme ---
     if (theme === "minimal") {
         return (
             <>
@@ -25,6 +28,7 @@ export function ThemeWrapper({ theme, mounted, children }: ThemeWrapperProps) {
         );
     }
 
+    // --- Midnight Theme ---
     if (theme === "midnight") {
         return (
             <>
@@ -62,7 +66,7 @@ export function ThemeWrapper({ theme, mounted, children }: ThemeWrapperProps) {
         );
     }
 
-    // Aurora Theme
+    // Default fallback return for the "aurora" theme
     return (
         <>
             <div className="gradient-bg absolute inset-0 -z-10" />
