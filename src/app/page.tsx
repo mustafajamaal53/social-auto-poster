@@ -60,7 +60,7 @@ export default function Home() {
         error:
           error instanceof Error
             ? error.message
-            : "Unexpected error while publishing.",
+            : "Unexpected error while publishing post.",
       });
     } finally {
       setIsSubmitting(false);
