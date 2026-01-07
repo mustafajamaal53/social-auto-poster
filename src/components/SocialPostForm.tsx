@@ -24,6 +24,8 @@ export function SocialPostForm({ theme, onThemeChange, mounted }: SocialPostForm
     const [imageUrl, setImageUrl] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [result, setResult] = useState<PublishResponse | null>(null);
+    const [showToast, setShowToast] = useState(false);
+    const [isToastExiting, setIsToastExiting] = useState(false);
 
     // Dynamic UI flags based on the active theme
     const isMidnight = theme === "midnight";
@@ -74,6 +76,21 @@ export function SocialPostForm({ theme, onThemeChange, mounted }: SocialPostForm
             setIsSubmitting(false);
         }
     }
+
+    // Handle toast lifecycle
+    useEffect(() => {
+        if (result) {
+            setShowToast(true);
+            setIsToastExiting(false);
+
+            const timer = setTimeout(() => {
+                setIsToastExiting(true);
+                setTimeout(() => setShowToast(false), 500); // Wait for exit animation
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [result]);
 
     return (
         <>
@@ -131,9 +148,7 @@ export function SocialPostForm({ theme, onThemeChange, mounted }: SocialPostForm
                     }`}>
                     {isMidnight ? (
                         <>
-                            <span className="text-white">Publish Instantly</span>
-                            <br />
-                            <span className="text-slate-300">Share Everywhere</span>
+                            <span className="text-white">Publish to Social Media</span>
                         </>
                     ) : (
                         "Publish to Social Media"
@@ -331,37 +346,57 @@ export function SocialPostForm({ theme, onThemeChange, mounted }: SocialPostForm
             </form>
 
             {/* 
-                Conditional Feedback Display 
-                - Uses color theory (green/red) to convey status instantly.
-                - Backdrop-blur for consistency with the glassmorphism aesthetic.
+                Modern Toast Notification 
+                - Fixed position at the top
+                - Theme-aware design and backdrop blurring
             */}
-            {result && (
-                <div
-                    className={`mt-6 animate-fade-in rounded-2xl border px-4 py-3 text-sm font-medium shadow-sm ${result.ok
-                        ? isMidnight
-                            ? "border-emerald-500/50 bg-gradient-to-r from-emerald-900/40 to-green-900/40 text-emerald-200 backdrop-blur-sm"
-                            : "border-emerald-200 bg-emerald-50 text-emerald-900"
-                        : isMidnight
-                            ? "border-rose-500/50 bg-gradient-to-r from-rose-900/40 to-red-900/40 text-rose-200 backdrop-blur-sm"
-                            : "border-rose-200 bg-rose-50 text-rose-900"
-                        }`}
-                >
-                    <div className="flex items-center gap-3">
-                        {result.ok ? (
-                            <>
-                                <svg className={`h-5 w-5 ${isMidnight ? "text-emerald-400" : "text-emerald-600"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                                <span>{result.message ?? "Published successfully!"}</span>
-                            </>
-                        ) : (
-                            <>
-                                <svg className={`h-5 w-5 ${isMidnight ? "text-rose-400" : "text-rose-600"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {showToast && result && (
+                <div className={`fixed top-1/2 left-1/2 z-[100] w-[90%] max-w-md ${isToastExiting ? 'animate-toast-out' : 'animate-toast-in'}`}>
+                    <div
+                        className={`overflow-hidden rounded-3xl border px-8 py-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] backdrop-blur-2xl transition-all duration-500 ${result.ok
+                            ? isMidnight
+                                ? "border-emerald-500/50 bg-slate-900/95 text-emerald-100"
+                                : "border-emerald-400 bg-white/95 text-slate-900 shadow-emerald-900/10"
+                            : isMidnight
+                                ? "border-rose-500/50 bg-slate-900/95 text-rose-100"
+                                : "border-rose-400 bg-white/95 text-slate-900 shadow-rose-900/10"
+                            }`}
+                    >
+                        <div className="flex flex-col items-center text-center gap-4">
+                            <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl animate-pop-in ${result.ok
+                                ? isMidnight ? "bg-emerald-500/20" : "bg-emerald-100"
+                                : isMidnight ? "bg-rose-500/20" : "bg-rose-100"
+                                }`}>
+                                {result.ok ? (
+                                    <svg className={`h-10 w-10 ${isMidnight ? "text-emerald-400" : "text-emerald-600"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                ) : (
+                                    <svg className={`h-10 w-10 ${isMidnight ? "text-rose-400" : "text-rose-600"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                )}
+                            </div>
+                            <div className="flex flex-col gap-1 animate-slide-up" style={{ animationDelay: '0.2s', opacity: 0, animationFillMode: 'forwards' }}>
+                                <p className={`text-xs font-black uppercase tracking-[0.2em] ${result.ok ? "text-emerald-500" : "text-rose-500"
+                                    }`}>
+                                    {result.ok ? "Success" : "Error"}
+                                </p>
+                                <p className="text-xl font-bold tracking-tight">
+                                    {result.ok ? (result.message ?? "Published successfully!") : (result.error ?? "Submission failed.")}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setIsToastExiting(true)}
+                                className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100/10 transition-colors opacity-40 hover:opacity-100"
+                            >
+                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
-                                <span>{result.error ?? "Unable to publish."}</span>
-                            </>
-                        )}
+                            </button>
+                        </div>
+                        {/* Progress bar for auto-dismiss */}
+                        <div className={`absolute bottom-0 left-0 h-1.5 bg-current opacity-20 transition-all duration-[3000ms] ease-linear ${showToast && !isToastExiting ? 'w-full' : 'w-0'}`} />
                     </div>
                 </div>
             )}
